@@ -27,10 +27,16 @@ npm run dev
 frontend - https://yc22.vercel.app
 backend - https://book-assignment.onrender.com/
 
-### 5. Whats working Whats not
+### 5. What's working What's not
+**Working**
  1. User Profiles (Owners + Seekers)
  2. Book Listing Interface
  3. Authentication (Basic)
+**Not Working**
+ 1. Edit your own book listings
+ 2. Add Book cover
+
+
 ## **Bonus Features**
 1. delete your own book listings
 2. Filter listings by Genre/Location
