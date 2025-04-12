@@ -23,7 +23,9 @@ cd frontend
 npm install
 npm run dev
 ```
-### 4. Live Link - https://yc22.vercel.app
+### 4. Live Link - 
+frontend - https://yc22.vercel.app
+backend - https://book-assignment.onrender.com/
 
 ### 5. Whats working Whats not
  1. User Profiles (Owners + Seekers)
