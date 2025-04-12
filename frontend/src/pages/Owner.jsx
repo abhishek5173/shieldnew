@@ -48,7 +48,7 @@ function Owner() {
         ownerid: user.id,
       };
 
-      await axios.post('https://book-assignment.onrender.com//book/books', newBook);
+      await axios.post('https://book-assignment.onrender.com/book/books', newBook);
       setTitle('');
       setAuthor('');
       setGenre('');
