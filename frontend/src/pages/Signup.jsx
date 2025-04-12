@@ -12,7 +12,7 @@ function Signup() {
 
   const handleSignup = async () => {
     try {
-      await axios.post("https://book-assignment.onrender.com//api/auth/signup", {
+      await axios.post("https://book-assignment.onrender.com/api/auth/signup", {
         name,
         email,
         password,
