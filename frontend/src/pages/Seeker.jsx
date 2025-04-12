@@ -14,7 +14,7 @@ function Seeker() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await axios.get("https://book-assignment.onrender.com//book/books");
+        const res = await axios.get("https://book-assignment.onrender.com/book/books");
         setBooks(res.data);
         setFilteredBooks(res.data);
       } catch (error) {
