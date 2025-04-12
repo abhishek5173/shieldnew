@@ -29,7 +29,7 @@ npm run dev
  1. User Profiles (Owners + Seekers)
  2. Book Listing Interface
  3. Authentication (Basic)
-**Bonus Features**
+## **Bonus Features**
 1. delete your own book listings
 2. Filter listings by Genre/Location
 3. Deploy frontend + backend
