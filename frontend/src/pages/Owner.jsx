@@ -15,7 +15,7 @@ function Owner() {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get('https://book-assignment.onrender.com//book/books');
+      const res = await axios.get('https://book-assignment.onrender.com/book/books');
       const ownerBooks = res.data.filter(book => book.ownerid === user.id);
       setBooks(ownerBooks);
     } catch (error) {
@@ -25,7 +25,7 @@ function Owner() {
 
   const deletebook = async (id) => {
     try {
-      await axios.delete(`https://book-assignment.onrender.com//book/books/${id}`);
+      await axios.delete(`https://book-assignment.onrender.com/book/books/${id}`);
       fetchBooks();
     } catch (error) {
       console.error('Error deleting book:', error);
