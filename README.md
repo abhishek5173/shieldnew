@@ -32,6 +32,8 @@ backend - https://book-assignment.onrender.com/
  1. User Profiles (Owners + Seekers)
  2. Book Listing Interface
  3. Authentication (Basic)
+
+
 **Not Working**
  1. Edit your own book listings
  2. Add Book cover
