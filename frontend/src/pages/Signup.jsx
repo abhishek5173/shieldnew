@@ -7,22 +7,29 @@ function Signup() {
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("seeker");
+  const [role, setRole] = useState("customer");
+  const [code, setCode] = useState(""); 
   const navigate = useNavigate();
 
   const handleSignup = async () => {
     try {
-      await axios.post("https://book-assignment.onrender.com/api/auth/signup", {
+      const payload = {
         name,
         email,
         password,
         role,
         mobile,
-      });
+      };
+
+      if (role === "owner") {
+        payload.code = code;
+      }
+
+      await axios.post("http://localhost:5000/api/auth/signup", payload);
       alert("Signup successful. Please log in.");
-      navigate("/");
+      navigate("/login");
     } catch (err) {
-      alert("Signup failed");
+      alert(err?.response?.data?.message || "Signup failed");
     }
   };
 
@@ -71,10 +78,19 @@ function Signup() {
             className="w-full border px-3 py-2 rounded"
           >
             <option value="owner">Owner</option>
-            <option value="seeker">Seeker</option>
+            <option value="customer">Customer</option>
           </select>
         </div>
 
+        {role === "owner" && (
+          <input
+            type="text"
+            placeholder="Enter Owner Code"
+            value={code}
+            onChange={e => setCode(e.target.value)}
+            className="mb-3 w-full px-3 py-2 border rounded"
+          />
+        )}
 
         <button
           onClick={handleSignup}
@@ -82,9 +98,17 @@ function Signup() {
         >
           Sign Up
         </button>
+
+        <button
+          onClick={()=> navigate("/")}
+          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded mt-2"
+        >
+          Home
+        </button>
+
         <p
           className="mt-4 text-center text-sm text-indigo-600 hover:underline cursor-pointer"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
         >
           Have an account? Sign In
         </p>

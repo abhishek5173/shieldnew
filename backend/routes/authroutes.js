@@ -9,11 +9,15 @@ const USER = path.join(__dirname, '../data/users.json');
 router.post("/signup", (req, res) => {
     try {
         const users = JSON.parse(fs.readFileSync(USER, 'utf8'));
-        const { name, email, password, role, mobile } = req.body;
+        const { name, email, password, role, mobile, code } = req.body;
         if (users.find(user => user.email === email)) {
             return res.status(400).json({ message: "User already exists" });
         }
-
+        if ( role == "owner"){
+            if (code !== process.env.CODE) {
+                return res.status(400).json({ message: "Invalid code" });
+            }
+        }
         const newuser = { id: Date.now(), name, email, password, role, mobile };
         users.push(newuser);
         fs.writeFileSync(USER, JSON.stringify(users), 'utf8');
