@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
   const [nav, setNav] = useState(false);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (user?.role === "customer") {
       setNav(true);
+    } else {
+      setNav(false);
     }
   }, [user]);
 
@@ -26,40 +28,70 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    setUser(null); // ✅ Update state
+    setNav(false); // ✅ Optional but good for clarity
     navigate("/");
   };
 
   return (
-    <nav className="bg-white shadow-md px-6 py-3 flex justify-between items-center">
+    <nav
+      className={`bg-white shadow-md px-6 py-3 flex justify-between items-center ${
+        window.location.pathname === "/" ? "bg-cover bg-top" : ""
+      }`}
+      style={
+        window.location.pathname === "/"
+          ? { backgroundImage: "url('/bgnew.jpg')" }
+          : {}
+      }
+    >
       <div
         className="text-2xl font-extrabold text-indigo-600 tracking-wide cursor-pointer select-none"
         onClick={handleLogoClick}
       >
         <span className="text-black">S</span>HIELD
+
+       
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-8 font-bold text-lg ">
         <button
-          onClick={() => navigate("/about")}
-          className="text-sm text-gray-700 hover:text-indigo-600 transition"
+          onClick={() => navigate("/about/upcst")}
+          className=" text-gray-700  hover:text-indigo-600 transition"
         >
-          About
+          UPCST
         </button>
-
-  
+        <button
+          onClick={() => navigate("/about/grant")}
+          className=" text-gray-700 hover:text-indigo-600 transition"
+        >
+          UPCST GRANT SCHEME
+        </button>
+        <button
+          onClick={() => navigate("/about/team")}
+          className=" text-gray-700 hover:text-indigo-600 transition"
+        >
+          TEAM
+        </button>
+        <button
+          onClick={() => navigate("/papers")}
+          className=" text-gray-700 hover:text-indigo-600 transition"
+        >
+         RESEARCH PAPERS
+        </button>
+        <button
+          onClick={() => navigate("/about/shield")}
+          className=" text-gray-700 hover:text-indigo-600 transition"
+        >
+          SHIELD
+        </button>
+        
+        
+      </div>
+      <div className="flex gap-4">
         {nav && (
           <>
-            <button
-              
-              className="text-sm text-gray-700 hover:text-indigo-600 transition"
-            >
+            <button className="text-sm text-gray-700 hover:text-indigo-600 transition">
               Bill History
-            </button>
-            <button
-              
-              className="text-sm text-gray-700 hover:text-indigo-600 transition"
-            >
-              Gamification & Rewards
             </button>
           </>
         )}
@@ -68,7 +100,7 @@ function Navbar() {
           <>
             <button
               onClick={() => navigate("/login")}
-              className="text-sm text-gray-700 hover:text-indigo-600 transition"
+              className="text-lg font-bold text-gray-700 hover:text-indigo-600 transition"
             >
               Login
             </button>

@@ -32,11 +32,41 @@ const Customer = () => {
   const [loadMinusRenewable, setLoadMinusRenewable] = useState(0); // New state
   const [energyEfficiency, setEnergyEfficiency] = useState(0); // New state
   const [energySavings, setEnergySavings] = useState(0); // New state
+  const [fluctuatingValue, setFluctuatingValue] = useState(0);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) setUser(storedUser);
   }, []);
+
+
+
+  useEffect(() => {
+    if (!user) return;
+
+    const getRandomValue = () => {
+      const userNum = parseInt(user.name.replace("Customer ", ""));
+      if (userNum >= 1 && userNum <= 15) {
+        return Math.floor(Math.random() * (100 - 30 + 1)) + 30;
+      } else if (userNum >= 16 && userNum <= 20) {
+        return Math.floor(Math.random() * (1000 - 600 + 1)) + 600;
+      } else {
+        return 0;
+      }
+    };
+
+    setFluctuatingValue(getRandomValue());
+
+    const interval = setInterval(() => {
+      setFluctuatingValue(getRandomValue());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+
+
+
 
   useEffect(() => {
     if (!user) return;
@@ -68,7 +98,7 @@ const Customer = () => {
   const filterByBuilding = (data, userName) => {
     const userNum = parseInt(userName.split(' ')[1]); // Extract number from 'Customer 15', 'Customer 16', etc.
     let buildingId = '';
-  
+
     // For Customer 16 to Customer 20, use Industry_1 to Industry_5
     if (userNum >= 16 && userNum <= 20) {
       const industryId = userNum - 15; // This will map Customer 16 to Industry_1, Customer 17 to Industry_2, etc.
@@ -77,10 +107,10 @@ const Customer = () => {
       const prefix = userNum <= 20 ? 'House_' : 'Industry_'; // Default behavior for House_1 to House_20
       buildingId = `${prefix}${userNum}`;
     }
-  
+
     return data.filter(row => row.Building_ID === buildingId);
   };
-  
+
   const processInsights = (data) => {
     const cleaned = data.filter(d =>
       d['Energy_Consumption (kWh)'] &&
@@ -128,9 +158,18 @@ const Customer = () => {
   if (loading) return <div className="text-center mt-10">Loading...</div>;
   if (error) return <div className="text-red-600 mt-10 text-center">{error}</div>;
 
+
+  const suggestions = [
+    'Switch high-usage appliances to non-peak hours to earn credits.',
+    'Consider installing solar panels to boost renewable %.',
+    'Monitor appliance usage weekly to stay under budget.',
+    'Reduce air conditioner use during peak times for more savings.',
+    'Set energy-efficient timers for your appliances.',
+  ];
+
   return (
     <div className="w-full h-[calc(100vh-3.5rem)] overflow-y-auto mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Welcome, {user.name}</h1>
+      <h1 className="text-3xl font-bold mb-6">Welcome, {user.name} </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Energy Gauge */}
@@ -145,6 +184,12 @@ const Customer = () => {
             colors={['#5BE12C', '#F5CD19', '#EA4228']}
           />
           <p className="text-center mt-2 text-sm">{totalConsumption.toFixed(2)} kWh used</p>
+
+          {/* 🔢 Fluctuating Value */}
+          <div className="text-center mt-4 text-3xl font-bold ">
+            <h2 className="font-semibold text-lg mb-2">🔢 Current Consumption Value</h2>
+            <p className='text-3xl'>{fluctuatingValue}</p>
+          </div>
         </div>
 
         {/* Weekly Line Chart */}
@@ -163,6 +208,27 @@ const Customer = () => {
             }}
           />
         </div>
+        
+        <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-xl p-5 shadow hover:shadow-md transition">
+          <h2 className="font-semibold text-lg mb-2">⚡ Total Consumption</h2>
+          <p className="text-2xl font-bold text-yellow-700">{totalConsumption.toFixed(2)} kWh</p>
+          <p className="text-sm text-gray-700 mt-2">Total Consumption Renewable + Load</p>
+        </div>
+          
+
+           {/* Load Used - Renewable Energy */}
+         <div className="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-5 shadow hover:shadow-md transition">
+          <h2 className="font-semibold text-lg mb-2">⚡ Load Used </h2>
+          <p className="text-2xl font-bold text-blue-700">{loadMinusRenewable.toFixed(2)} kWh</p>
+          <p className="text-sm text-gray-700 mt-2">Energy used after considering renewable generation</p>
+        </div>
+
+            {/* Energy Savings */}
+        <div className="bg-orange-50 border-l-4 border-orange-500 rounded-xl p-5 shadow hover:shadow-md transition">
+          <h2 className="font-semibold text-lg mb-2">💡 Energy Savings</h2>
+          <p className="text-2xl font-bold text-orange-700">{energySavings.toFixed(2)} kWh</p>
+          <p className="text-sm text-gray-700 mt-2">Energy saved by using renewable sources</p>
+        </div>
 
         {/* Renewable Energy Contribution */}
         <div className="bg-green-50 border-l-4 border-green-500 rounded-xl p-5 shadow hover:shadow-md transition">
@@ -172,20 +238,17 @@ const Customer = () => {
         </div>
 
         {/* Bill Prediction */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-xl p-5 shadow hover:shadow-md transition">
-          <h2 className="font-semibold text-lg mb-2">💸 Estimated Bill</h2>
-          <p className="text-2xl font-bold text-yellow-700">₹{(billPrediction * 85).toFixed(2)}</p>
-          <p className="text-sm text-gray-700 mt-2">Approx. bill based on grid price</p>
-        </div>
-        
+       
+
 
         {/* Average Daily Consumption */}
-<div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-xl p-5 shadow hover:shadow-md transition">
-  <h2 className="font-semibold text-lg mb-2">📅 Average Daily Consumption</h2>
-  <p className="text-2xl font-bold text-indigo-700">{avgDailyConsumption.toFixed(2)} kWh</p>
-  <p className="text-sm text-gray-700 mt-2">Average daily energy consumption based on the past data</p>
-</div>
-
+        <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-xl p-5 shadow hover:shadow-md transition">
+          <h2 className="font-semibold text-lg mb-2">📅 Average Daily Consumption</h2>
+          <p className="text-2xl font-bold text-indigo-700">{avgDailyConsumption.toFixed(2)} kWh</p>
+          <p className="text-sm text-gray-700 mt-2">Average daily energy consumption based on the past data</p>
+        </div>
+        
+        
 
         {/* Appliance Usage */}
         <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-xl p-5 shadow hover:shadow-md transition">
@@ -194,26 +257,11 @@ const Customer = () => {
           <p className="text-sm text-gray-700 mt-2">Avg. index based on usage patterns</p>
         </div>
 
-        {/* Load Used - Renewable Energy */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-5 shadow hover:shadow-md transition">
-          <h2 className="font-semibold text-lg mb-2">⚡ Load Used </h2>
-          <p className="text-2xl font-bold text-blue-700">{loadMinusRenewable.toFixed(2)} kWh</p>
-          <p className="text-sm text-gray-700 mt-2">Energy used after considering renewable generation</p>
-        </div>
+       
 
-        {/* Energy Efficiency */}
-        <div className="bg-teal-50 border-l-4 border-teal-500 rounded-xl p-5 shadow hover:shadow-md transition">
-          <h2 className="font-semibold text-lg mb-2">🌿 Energy Efficiency</h2>
-          <p className="text-2xl font-bold text-teal-700">{energyEfficiency.toFixed(2)}%</p>
-          <p className="text-sm text-gray-700 mt-2">Renewable energy contribution to total usage</p>
-        </div>
+      
 
-        {/* Energy Savings */}
-        <div className="bg-orange-50 border-l-4 border-orange-500 rounded-xl p-5 shadow hover:shadow-md transition">
-          <h2 className="font-semibold text-lg mb-2">💡 Energy Savings</h2>
-          <p className="text-2xl font-bold text-orange-700">{energySavings.toFixed(2)} kWh</p>
-          <p className="text-sm text-gray-700 mt-2">Energy saved by using renewable sources</p>
-        </div>
+        
 
         {/* Peak Load Alerts */}
         <div className="bg-red-50 border-l-4 border-red-500 rounded-xl p-5 shadow hover:shadow-md transition">
@@ -226,16 +274,65 @@ const Customer = () => {
             <p className="text-green-700 text-sm">✅ No peak usage detected. You're doing great!</p>
           )}
         </div>
+        <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-xl p-5 shadow hover:shadow-md transition">
+          <h2 className="font-semibold text-lg mb-2">💸 Estimated Bill</h2>
+          <p className="text-2xl font-bold text-yellow-700">₹{(billPrediction * 85).toFixed(2)}</p>
+          <p className="text-sm text-gray-700 mt-2">Approx. bill based on grid price</p>
+        </div>
+        {/* Credit Earned */}
+        <div className="bg-red-50 border-l-4 border-red-500 rounded-xl p-5 shadow hover:shadow-md transition">
+          <h2 className="font-semibold text-lg mb-2">💳 Credit Earned</h2>
+          <p className="text-2xl font-bold text-red-700">
+            ₹{(energySavings * 5).toFixed(2)}
+          </p>
+          <p className="text-sm text-gray-700 mt-2">
+            Earned by contributing renewable energy to the grid.
+          </p>
+        </div>
 
         {/* Personalized Tips */}
-        <div className="bg-white rounded-xl p-5 shadow hover:shadow-md transition col-span-1 sm:col-span-2 lg:col-span-3">
-          <h2 className="font-semibold text-lg mb-2">🔔 Personalized Suggestions</h2>
-          <ul className="list-disc pl-5 text-sm space-y-1 text-gray-700">
-            <li>Switch high-usage appliances to non-peak hours.</li>
-            <li>Consider installing solar panels to boost renewable %.</li>
-            <li>Monitor appliance usage weekly to stay under budget.</li>
-          </ul>
-        </div>
+        <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all col-span-1 sm:col-span-2 lg:col-span-3 border border-blue-200">
+  <h2 className="font-bold text-xl mb-3 text-blue-800 flex items-center gap-2">
+    🔔 Gamification & Rewards
+  </h2>
+
+  {/* Personalized message */}
+  <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-md mb-5">
+    <p className="text-sm text-green-700">
+      👏 Great job managing your energy! You've earned{' '}
+      <span className="font-bold text-green-800">₹{(energySavings * 5).toFixed(2)}</span> in credits this month. Keep it up!
+    </p>
+  </div>
+
+  {/* Billing Summary */}
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5 text-sm">
+    <div className="bg-white p-4 rounded-md shadow text-center">
+      <p className="text-gray-500">Total Bill</p>
+      <p className="text-lg font-bold text-blue-700">₹{(billPrediction * 85).toFixed(2)}</p>
+    </div>
+    <div className="bg-green-100 p-4 rounded-md shadow text-center">
+      <p className="text-gray-500">Credits Earned</p>
+      <p className="text-lg font-bold text-green-700">₹{(energySavings * 5).toFixed(2)}</p>
+    </div>
+    <div className="bg-red-100 p-4 rounded-md shadow text-center">
+      <p className="text-gray-500">Payable Bill</p>
+      <p className="text-lg font-bold text-red-700">
+        ₹{((billPrediction * 85) - (energySavings * 5)).toFixed(2)}
+      </p>
+    </div>
+  </div>
+
+  {/* Tips to earn more */}
+  <div>
+    <h3 className="font-semibold text-md text-blue-700 mb-2">💡 Tips to Earn More Credits:</h3>
+    <ul className="list-disc pl-5 text-sm space-y-1 text-gray-700">
+      {suggestions.map((suggestion, index) => (
+        <li key={index}>{suggestion}</li>
+      ))}
+    </ul>
+  </div>
+</div>
+
       </div>
     </div>
   );

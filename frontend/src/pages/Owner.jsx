@@ -25,6 +25,7 @@
     const [selectedBuildings, setSelectedBuildings] = useState([]);
     const [startDate, setStartDate] = useState('2024-02-01');
     const [endDate, setEndDate] = useState('2024-02-29');
+    const [view, setView] = useState('');
 
     useEffect(() => {
       Papa.parse('/data.csv', {
@@ -177,54 +178,83 @@
               <p className="text-red-600">No data found for selected range.</p>
             )}
           </div>
-
+            
           <div className="bg-white p-4 rounded shadow text-sm space-y-2">
-  <h2 className="text-xl font-semibold mb-2">📋 SHIELD Report</h2>
+          <div className="space-y-4">
+      {/* Toggle Buttons */}
+      <div className="flex gap-4">
+        <button
+          onClick={() => setView('traditional')}
+          className={`px-4 py-2 rounded ${view === 'traditional' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+        >
+          Traditional
+        </button>
+        <button
+          onClick={() => setView('ourModel')}
+          className={`px-4 py-2 rounded ${view === 'ourModel' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+        >
+          Our Model
+        </button>
+      </div>
 
-  <p><strong>Total Consumption ({startDate} to {endDate}):</strong> {totalConsumption.toFixed(2)} kWh</p>
-  <p><strong>Total Renewable Generation:</strong> {totalRenewable.toFixed(2)} kWh</p>
-  <p>
-    <strong>Net Balance (Renewable - Consumption):</strong>{" "}
-    <span className={netBalance >= 0 ? "text-green-600" : "text-red-600"}>
-      {netBalance.toFixed(2)} kWh
-    </span>
-  </p>
+      {/* Conditional Content */}
+      {view && (
+        <div className="bg-white p-4 rounded shadow text-sm space-y-2">
+          <h2 className="text-xl font-semibold mb-2">📋 SHIELD Report</h2>
 
-  <div className='flex gap-6'>
-    <p><strong>Predicted Demand (March):</strong> {predictedNextMonth} kWh</p>
-    <p><strong>Predicted Demand (April):</strong> {predictedMonthAfter} kWh</p>
-  </div>
+          <p><strong>Total Consumption ({startDate} to {endDate}):</strong> {totalConsumption.toFixed(2)} kWh</p>
+          
+          {/* Only show the rest if 'Our Model' is selected */}
+          {view === 'ourModel' && (
+            <>
+              <p><strong>Total Renewable Generation:</strong> {totalRenewable.toFixed(2)} kWh</p>
+          <p>
+            <strong>Net Balance (Renewable - Consumption):</strong>{" "}
+            <span className={netBalance >= 0 ? "text-green-600" : "text-red-600"}>
+              {netBalance.toFixed(2)} kWh
+            </span>
+          </p>
 
-  <div className="mt-3">
-    <strong>Peak Load Hours:</strong>
-    <ul className="list-disc list-inside">
-      {peakLoads.map((p, i) => (
-        <li key={i}>{p.time} → {p.total.toFixed(2)} kWh</li>
-      ))}
-    </ul>
-  </div>
+              <div className='flex gap-6'>
+                <p><strong>Predicted Demand (March):</strong> {predictedNextMonth} kWh</p>
+                <p><strong>Predicted Demand (April):</strong> {predictedMonthAfter} kWh</p>
+              </div>
 
-  {overloadRisks.length > 0 && (
-    <div className="text-red-600">
-      <strong>⚠ Overload Risks:</strong>
-      <ul className="list-disc list-inside">
-        {overloadRisks.map((p, i) => (
-          <li key={i}>{p.time} → {p.total.toFixed(2)} kWh</li>
-        ))}
-      </ul>
+              <div className="mt-3">
+                <strong>Peak Load Hours:</strong>
+                <ul className="list-disc list-inside">
+                  {peakLoads.map((p, i) => (
+                    <li key={i}>{p.time} → {p.total.toFixed(2)} kWh</li>
+                  ))}
+                </ul>
+              </div>
+
+              {overloadRisks.length > 0 && (
+                <div className="text-red-600">
+                  <strong>⚠ Overload Risks:</strong>
+                  <ul className="list-disc list-inside">
+                    {overloadRisks.map((p, i) => (
+                      <li key={i}>{p.time} → {p.total.toFixed(2)} kWh</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {suggestions.length > 0 && (
+                <div className="text-blue-700">
+                  <strong>✅ Suggestions:</strong>
+                  <ul className="list-disc list-inside">
+                    {suggestions.map((s, i) => (
+                      <li key={i}>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
-  )}
-
-  {suggestions.length > 0 && (
-    <div className="text-blue-700">
-      <strong>✅ Suggestions:</strong>
-      <ul className="list-disc list-inside">
-        {suggestions.map((s, i) => (
-          <li key={i}>{s}</li>
-        ))}
-      </ul>
-    </div>
-  )}
 </div>
 
         </div>

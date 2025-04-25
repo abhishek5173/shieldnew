@@ -13,6 +13,7 @@ import AboutUPCST from './components/AboutUPCST'
 import AboutGrant from './components/AboutGrant'
 import AboutTeam from './components/AboutTeam'
 import AboutShield from './components/AboutShield'
+import Papers from './components/Papers'
 
 function App() {
   const location = useLocation();
@@ -27,7 +28,8 @@ function App() {
         <Route path="/about/upcst" element={<AboutUPCST/>} />
         <Route path="/about/grant" element={<AboutGrant/>} />
         <Route path="/about/team" element={<AboutTeam/>} />
-        <Route path="/about/shield" element={<AboutShield/>} />
+        <Route path="/about/shield" element={<AboutShield/>} />        
+        <Route path="/papers" element={<Papers/>} />        
         <Route path="/login" element={<PublicRoute><Login/></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><Signup/></PublicRoute>}/>
         <Route path="/customer" element={<Privateroute><Customer/></Privateroute>}/>
